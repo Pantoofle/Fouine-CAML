@@ -1,0 +1,101 @@
+\documentclass{beamer}
+\usepackage[francais]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{xspace}
+\usepackage{changepage}
+
+\mode<presentation> {\usetheme{ENSLyon}}
+\usecolortheme{ENSLyon_orange}
+
+\setbeamersize{text margin left=35pt, text margin right=35pt} 
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+
+
+\title{PROJ 2}
+\author{Pitois François et Fernandez Simon}
+\institute{ENS Lyon}
+%\medskip
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\section{Fonctions récursives}
+\begin{frame}{Fonctions récursives}
+
+  Gestion des fonctions récursives de l'interpréteur par évalution paresseuse :
+
+  Dès que l'interprésteur voit un \texttt{let rec}, il le met dans l'environnement en tant que tel.
+
+  L'interpréteur ne cherche à évaluer ce binding que quand il applique cette fonction récursive.
+
+\end{frame}
+
+
+\section{Machine ZINC}
+\begin{frame}{Machine ZINC}
+\begin{itemize}
+	\item Récursion terminale 
+
+	\texttt{let f x = 1 in \\ 
+	let g y = f (x+1) in g 2}
+		
+	On détecte quand on peut éviter une étape quand on rend la main
+\item Simplification des fonctions à plusieurs variables 
+  
+	\texttt{let f x y z = ... in f 1 2 3 ;;}
+	
+	\texttt{CLOS(CLOS(CLOS(...)))}
+	
+	On empile tous les arguments et on y accède en une seule fois
+\end{itemize}	
+\end{frame}
+
+
+\section{Pattern}
+\begin{frame}{Pattern}
+  \texttt{let pattern = expr in expr ;;\\
+	fun pattern -> expr ;;}
+
+  Une pattern peut être :
+  \begin{itemize}
+  \item nom de variable
+  \item \texttt{(pattern, pattern)}
+  \item \texttt{pattern : type}
+  \item \texttt{pattern -> pattern}
+  \end{itemize}
+\end{frame}
+
+
+\section{Indice de De Bruijn}
+\begin{frame}{Indice de De Bruijn}
+
+  Simplification des noms de variables
+
+  Éviter les comparaisons de chaines de caractères
+
+  Indices dans l'environnement
+ 
+  \texttt{let x = 3 in let y = 4 in x + y} 
+	
+	devient alors 
+	
+	\texttt{let 3 in let 4 in 0+1}
+
+\end{frame}
+
+
+\section{Conversion de fouine + blabla vers fouine}
+\begin{frame}{Conversion de fouine + blabla vers fouine}
+
+  Fait en fouine
+
+  On utilise des noms de variable réservés pour repérer les zones du programme à modifier.
+  
+\end{frame}
+\end{document}

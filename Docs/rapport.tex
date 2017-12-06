@@ -1,0 +1,112 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[francais]{babel} %% installer texlive-lang-french pour cela
+
+% elements du titre
+\title{Rapport projet 2, où l'on parle de Fouine}
+\author{François Pitois et Simon Fernandez}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Présentation}
+Ce projet est un interprete, compilateur, machine à pile du langage Fouine.
+Il a été programmé en CamL (souvent entre minuit et 3h) et aussi en partie
+en Fouine (de 3h à 5h)
+
+\section{Organisation du Code}
+Le code est structuré de la manière suivante :
+\begin{itemize}
+\item  main : Point d’entrée du programme, gère les options passées `a l’execu-
+table et appelle les différentes fonctions
+\item  parser/lexer : Parsent l’entrée. Fournissent un arbre du code
+\item  uncoment : fichier permettant de supprimer les commentaires d’un fichier
+donné en entrée
+\item types : concentre tous les types qui seront utilisés partout
+\item  interprete : interprete de l’arborescence générée par lexer/parser, en vérifiant
+les types
+\item  zinc compiler : compile l’arborescence vers une suite de lexems qui seront
+passés à la machine ZINC
+\item  zinc machine : la machine ZINC qui va traiter les lexems, faire les calculs
+et renvoyer le resultat. Elle est détaillée ici \cite{Zinc}
+\item  machine types : les types et les tokens utilisés dans la machine à pile
+\item de bruijn : traduit toute une arborescence pou utiliser les indices de De
+Bruijn
+\item convert : le convertisseur de Caml + extenstion vers Caml
+\item exception.fou.ml : Fichier Fouine qui décrit les transformations de Caml + exception vers Caml
+\end{itemize}
+
+\section{Options possibles}
+Nous avons implémenté les options suivantes : 
+\begin{itemize}
+\item Deux niveaux de debug : –verbose/-v –debug/-d
+\item L’interprete qui vérifie aussi en direct la validité du typage
+\item La machine ZINC, avec récursivité terminale
+\item La traduction vers des indices de De Bruijn
+\item L’export des lexems compilés vers un fichier exterieur
+\item La traduction Fouine + Exceptions vers Fouine
+\item Les fonctions prInt et feedback qui donnent des informations en cours d’interpretation
+\end{itemize}
+
+\section{Objets traités}
+\begin{itemize}
+\item Entiers
+\item Booléens
+\item Fonctions
+\item Recursivité
+\item Couples
+\end{itemize}
+
+\section{Spécificités de l'initerprete : les patterns}
+Pour  gèrer  les  types  dans  l’interpreteur,  nous  avons  ajouté  l’idée  des  patterns. 
+Les patterns permettent de traiter les fonctions, les paires, et le typage de variables. 
+Ainsi, tout \texttt{Let \ldots = \ldots in} associe une expression à un pattern.
+Donc  les  expressions  du  type \texttt{let a, b = 1, 2 in \ldots} fonctionnent  parfaitement
+puisqu’on souhaite matcher la gauche du let avec la droite, et ainsi faire des définitions 
+multiples
+
+L’ajout des patterns a aussi permis de simplifier l’expressions du type
+\texttt{let f x y z = \ldots}
+Et éviter la surcharge d’un
+\texttt{fun x -> fun y -> fun z -> \ldots }
+Ces patterns ont aussi été utilisés par la ZINC
+
+\section{Spécificités de la macine à pile : ZINC et De Bruijn}
+\subsection{ZINC}
+La machine se base sur l’implémentation ZINC, c’est à dire qu’on simplifie les
+\texttt{let f x y z = \ldots} pour éviter d’avoir 3 RETURN de fonctions. On utilise
+la récursivité terminale.
+Exemple : En machine classique la fonction de $z$ rend la main à $y$
+qui rend la main à $x$ qui rende enfin la main à l’appelant
+Mais en recursion terminale, voyant que dès que $y$
+aura récupéré la main il la rendra à $x$, on préfère rendre directement la 
+main à l’appelant, à partir de $z$
+
+\subsection{De Bruijn}
+On utilise aussi la methode de De Bruijn pour les variables.
+L’idée est d’éviter des comparaisons entre chaines de caracteres lors de la
+recherche d’une variable dans l’environnement.
+Tout se passe lors de la compilation, on garde trace de l’environnement à
+chaque instant et on remplace les \texttt{ACCESS(x)} par des
+\texttt{ACCESS(n)} où $n$ est l’indice de la variable dans l’environnement.
+On a ainsi une recherche bien plus rapide et
+une machine plus légère puisqu’elle ne traite plus du tout de chaine de caracteres.
+Tout est nettoyé lors de la compilation
+
+
+\bibliographystyle{plain}
+\bibliography{biblio}
+
+\end{document}
+
+
+
+
+
+
+
+
+

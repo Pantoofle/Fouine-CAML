@@ -1,0 +1,253 @@
+\section{PROJ2 : Rendu 2}\label{proj2-rendu-2}
+
+Par François Pitois et Simon Fernandez
+
+\section{Description}\label{description}
+
+Ce projet est un interprete, compilateur, machine à pile du langage
+Fouine.
+
+\section{Contenu}\label{contenu}
+
+\begin{itemize}
+\tightlist
+\item
+  main.ml : fichier d'entrée. Fait l'appel aux differents modules :
+  Parsing, Lexing, Interprete, etc\ldots{} Traite les options données
+  pour appeler ce qu'il faut
+\item
+  lexer.mll : le lexer
+\item
+  parser.mly : le parser
+\item
+  types.ml : contient les differents types dans lesquels seront stockées
+  les instructions lues par lexer/parser
+\item
+  interprete.ml : interprete de l'arborescence générée par lexer/parser,
+  stockée dans les types décrits par types.ml
+\item
+  interprete\_aux.ml : fonctions utilitaires pour interprete. Sont juste
+  utiles et rendent le code plus lisible.
+\item
+  compiler.ml : compile l'arborescence en une suite de lexems qui seront
+  en suite traités par la machine à pile
+\item
+  machine.ml : machine à pile, prend une suite de lexems créés par
+  compiler.ml, et les évalue, renvoit le haut de la pile apres
+  l'execution
+\item
+  machine\_utils.ml : Un tas de fonctions utilitaires qui sont utilisées
+  par la machine classique et par la ZINC
+\item
+  machine\_types.ml : Contient les lexems de la machine et ceux des
+  différentes stacks
+\item
+  zinc\_compiler.ml : le compilateur de la version ZINC de la machine
+\item
+  zinc\_machine.ml : la machine de la version ZINC
+\item
+  de\_bruijn.ml : applique la transformation de De bruijn
+\item
+  convert.ml : le convertisseur de Caml + extenstion vers Caml
+\item
+  exception.fou.ml : Fichier fouine qui décrit les transformations de
+  Caml + exception vers Caml
+\item
+  Makefile : le Makefile du projet
+\item
+  README.md : ce document
+\item
+  exemples.fou.ml : Code fouine contenant de nombreux exemples sur les
+  differentes possibilités de l'interprete et de la machine
+\end{itemize}
+
+\section{Utilisation}\label{utilisation}
+
+Pour compiler les sources, le Makefile se charge de tout. Il faut juste
+taper make et tout est créé. L'executable s'appelle fouine
+
+Le resultat de l'execution est soit un entier, soit une fonction. Dans
+ce dernier cas, l'interprete affichera le code CamL correspondant, et la
+machine à pile affichera la fonction sous la forme d'une suite de lexems
+correspondants à la version compilée de la fonction
+
+\subsection{Options}\label{options}
+
+\begin{itemize}
+\tightlist
+\item
+  -d ou --debug : Rend l'execution verbeuse. Seront affichés differentes
+  informations intermediaires sur ce qu'il se passe lors de l'execution.
+\item
+  -m ou --machine : Compile le programme donné et l'execute avec la
+  machine à pile
+\item
+  -z ou --zinc : Compile le programme et le lance sur la machine ZINC
+\item
+  -i ou --interm toto.code : Compile le programme et stocke la suite de
+  lexems dans toto.code sans essayer de l'executer
+\item
+  -a ou --all : Lance l'interpreteur ET la machine à pile ET la ZINC sur
+  la même entrée, pour comparer les sorties
+\item
+  -E : Pour lancer la traduction vers fouine sans exception à partir de
+  Fouine avec exception. (MAIS ne marche pas avec les fonction
+  récursives)
+\end{itemize}
+
+\section{Parties non traitées :}\label{parties-non-traituxe9es}
+
+\begin{itemize}
+\tightlist
+\item
+  Recursivité sur des variables dans la machine à pile
+\item
+  Le moins unaire
+\item
+  L'option -R et -RE
+\end{itemize}
+
+\section{Options supplémentaires}\label{options-suppluxe9mentaires}
+
+\begin{itemize}
+\tightlist
+\item
+  En plus du prInt qui affiche la valeur de l'int, nous avons ajouté
+  feedback, qui affiche toute la valeur demandée (donc même si c'est une
+  fonction ou une reference), sous le même format que ce qui est renvoyé
+  pour le resultat
+\item
+  Une option -debug pour encore plus de détail. Bien plus verbeux que
+  -verbose
+\end{itemize}
+
+\section{Options et langage de la Machine à
+pile}\label{options-et-langage-de-la-machine-uxe0-pile}
+
+\subsection{Possibilités}\label{possibilituxe9s}
+
+\begin{itemize}
+\item
+  Arithmétique classique
+\item
+  If then else
+\item
+  let \ldots{} in
+\item
+  prInt et Feedback
+\item
+  Fonctions
+\item
+  References d'entiers et de fonctions
+\item
+  Fonctions recursives
+\item
+  Exceptions
+\item
+  Indices de De Bruijn : OK sur la classique et sur ZINC
+\end{itemize}
+
+\subsection{Reste à faire}\label{reste-uxe0-faire}
+
+\begin{itemize}
+\tightlist
+\item
+  Tableaux
+\item
+  Comparaison d'efficacité entre la classique et ZINC
+\end{itemize}
+
+\subsection{Lexems}\label{lexems}
+
+\begin{itemize}
+\item
+  CONST\_INT(n) : Represente une constante entière.
+\item
+  ACCESS(n) : Va chercher le n-ème terme en memoire et le met sur le
+  haut de la pile
+\item
+  GRAB : Prend le haut de la pile et le met sur le haut de
+  l'environnement
+\item
+  CLOS(code) : Representation d'une fonction : la suite de lexems à
+  egffectuer pour appliquer la fonction. La variable est la première sur
+  l'environnement
+\item
+  OP(c) : Une opération arithmétique ou booléenne, sous la forme d'un
+  seul caractere. Sont acceptés : +, -, *, /, =, \& (le ``et'' logique),
+  \textbar{} (le ``ou'' logique), \textless{}, \textgreater{}
+\item
+  APPLY : Appel la fonction qui est sur le dessus de la pile sur
+  l'argiment qui est en 2e position sur la pile.
+\item
+  PRINT : Affiche la valeur entière du dessus de la pile, sans la
+  dépiler
+\item
+  FEEDBACK : Affiche la valeur du dessus de la pile, sans la dépiler
+\item
+  ENDLET : Supprime la valeur qui est sur le haut de l'environnement
+\item
+  IF : Dépile le haut de la pile, si c'est true, execute jusqu'au ELSE
+  et ensuite saute tout jusqu'au ENDIF. Si c'est false, on execute
+  uniquement la portion entre ELSE et ENDIF
+\item
+  RETURN : Pour revenir d'un appel de fonction. Va chercher sur la pile
+  le code et l'environnement qui étaient en attente lors du APPLY pour
+  continuer l'execution.
+\item
+  REF : Comme GRAB mais stocke la valeur sous la forme d'une reference
+\item
+  DEREF : Bang sur la référence qui est sur le haut de la pile
+\item
+  ASSIGN(n) : Assigne la valeur qui est sur le haut de la pile à la
+  reference x qui est déjà dans l'environnement.
+\item
+  CLOS\_R(code) : Comme CLOS, mais pour des fontions recursives. Si lors
+  du APPLY c'est une fonction recursive qu'on se retrouve à appeler, on
+  la push dans son propre environnement avant de l'executer. Pout les
+  indices de De Bruijn, la variable est en position 2 sur la pile et la
+  fonction en position 1
+\item
+  SEQ : Pour délimiter des séquences : dépile le haut de la stack.
+\item
+  TRY : Dépile la fonction sur la stack et l'ajoute sur la pile
+  d'erreurs
+\item
+  RAISE : Dépile la fonction sur la pile d'erreur, effectue son calcul
+  et reprend le code là ou il faut
+\item
+  ENDTRY : Dépile une fonction de la pile d'erreurs. Arrive quand rien
+  n'a été RAISE
+\end{itemize}
+
+Pour ZINC - TAILAPPLY : Appel de apply avec recursivité terminale -
+PUSHMARK : Met une marque sur la pile pour délimiter les arguments
+passés à une fonction sur la pile d'arguments
+
+\section{Repartition du travail}\label{repartition-du-travail}
+
+\begin{itemize}
+\tightlist
+\item
+  main : Simon
+\item
+  lexer/parser : François
+\item
+  types : François et Simon
+\item
+  interprete : François
+\item
+  compiler : Simon
+\item
+  machine : Simon
+\item
+  zinc : Simon
+\item
+  De Bruijn : Simon
+\item
+  convertisseur : François
+\item
+  Exemples : François
+\item
+  Readme : Simon
+\end{itemize}
